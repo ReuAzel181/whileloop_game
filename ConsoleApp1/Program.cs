@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 int lives = 3;
+int score = 0;
 
 List<string> questions = new List<string>
 {
@@ -44,45 +46,68 @@ List<string> answers = new List<string>
 
 Random random = new Random();
 
+void ShowLives()
+{
+    Console.WriteLine($"\nLives remaining: {lives}");
+}
+
+void ShowScore()
+{
+    Console.WriteLine($"Your score: {score}");
+}
+
 while (lives > 0 && questions.Any())
 {
+    Console.Clear();
+    ShowLives();
+    ShowScore();
+    
     int randomIndex = random.Next(0, questions.Count);
-    string randomValue = questions[randomIndex];
+    string randomQuestion = questions[randomIndex];
 
-    string userans = "";
+    Console.WriteLine("\n" + randomQuestion);
+    
+    string userAnswer = "";
     try
     {
-        Console.WriteLine(randomValue);
-        userans = Console.ReadLine()?.ToLower()!;
+        userAnswer = Console.ReadLine()?.ToLower()!;
         Console.WriteLine();
-
     }
     catch (Exception ex)
     {
         Console.WriteLine(ex.Message);
     }
 
-
-    if (answers[randomIndex].ToLower() == userans)
+    if (answers[randomIndex].ToLower() == userAnswer)
     {
-        Console.WriteLine("Correct!\n");
+        Console.WriteLine("Correct! You earned 10 points.\n");
+        score += 10;
+
+        // Simulate some thinking time
+        Thread.Sleep(1000);
+
         questions.RemoveAt(randomIndex);
         answers.RemoveAt(randomIndex);
     }
     else
     {
-        questions.RemoveAt(randomIndex);
-        answers.RemoveAt(randomIndex);
-        Console.WriteLine("Wrong!\n");
+        Console.WriteLine("Wrong! You lost a life.\n");
+
+        // Simulate some thinking time
+        Thread.Sleep(1000);
+
         lives--;
     }
 }
 
+Console.Clear();
 if (lives == 0)
 {
-    Console.WriteLine("Game over! You've run out of lives.");
+    Console.WriteLine("Game Over! You've run out of lives.");
+    ShowScore();
 }
 else
 {
-    Console.WriteLine("Congratulations! You've answered all the questions.");
+    Console.WriteLine("Congratulations! You've answered all the questions!");
+    ShowScore();
 }
