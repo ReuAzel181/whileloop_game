@@ -9,7 +9,7 @@ public class QuizForm : Form
     private int lives = 3;
     private int score = 0;
     private Random random = new Random();
-    
+
     private List<string> questions = new List<string>
     {
         "______ , Coco, Zebra, and Sunny ",
@@ -28,7 +28,7 @@ public class QuizForm : Form
         "First name of Yuu Otosaka sister ",
         "Main charater in Hero Academia (Full Name)"
     };
-    
+
     private List<string> answers = new List<string>
     {
         "Toriko",
@@ -47,18 +47,19 @@ public class QuizForm : Form
         "Ayumi",
         "Izuku Midoriya"
     };
-    
+
     private Label questionLabel;
     private TextBox answerTextBox;
     private Label livesLabel;
     private Label scoreLabel;
     private Button submitButton;
-    
+
     public QuizForm()
     {
         // Initialize Form and Controls
         this.Text = "Anime Quiz Game";
         this.Size = new System.Drawing.Size(400, 300);
+        this.StartPosition = FormStartPosition.CenterScreen;
 
         questionLabel = new Label() { Left = 20, Top = 20, Width = 350 };
         answerTextBox = new TextBox() { Left = 20, Top = 60, Width = 200 };
@@ -67,6 +68,7 @@ public class QuizForm : Form
         scoreLabel = new Label() { Left = 20, Top = 130, Width = 200 };
 
         submitButton.Click += SubmitAnswer;
+        this.KeyDown += Form_KeyDown;
 
         this.Controls.Add(questionLabel);
         this.Controls.Add(answerTextBox);
@@ -78,10 +80,26 @@ public class QuizForm : Form
         ShowNextQuestion();
     }
 
+    private void Form_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
+        {
+            SubmitAnswer(this, EventArgs.Empty);
+        }
+    }
+
     private void SubmitAnswer(object sender, EventArgs e)
     {
-        string userAnswer = answerTextBox.Text.ToLower();
+        if (string.IsNullOrEmpty(answerTextBox.Text)) return;
+
+        string userAnswer = answerTextBox.Text.Trim().ToLower();
         int currentIndex = questions.IndexOf(questionLabel.Text);
+
+        if (currentIndex == -1)
+        {
+            MessageBox.Show("No question found. Please try again.");
+            return;
+        }
 
         if (answers[currentIndex].ToLower() == userAnswer)
         {
@@ -98,7 +116,7 @@ public class QuizForm : Form
 
         UpdateUI();
         ShowNextQuestion();
-        
+
         if (lives <= 0 || !questions.Any())
         {
             EndGame();
@@ -113,6 +131,11 @@ public class QuizForm : Form
         {
             int randomIndex = random.Next(0, questions.Count);
             questionLabel.Text = questions[randomIndex];
+        }
+        else
+        {
+            // Handle the case where there are no more questions
+            EndGame();
         }
     }
 
