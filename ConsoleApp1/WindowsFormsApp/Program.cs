@@ -60,6 +60,7 @@ public class QuizForm : Form
         this.Text = "Anime Quiz Game";
         this.Size = new System.Drawing.Size(400, 300);
         this.StartPosition = FormStartPosition.CenterScreen;
+        this.KeyPreview = true;
 
         questionLabel = new Label() { Left = 20, Top = 20, Width = 350 };
         answerTextBox = new TextBox() { Left = 20, Top = 60, Width = 200 };
