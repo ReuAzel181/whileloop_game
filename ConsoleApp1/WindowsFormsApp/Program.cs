@@ -60,72 +60,19 @@ public class QuizForm : Form
         this.Text = "Anime Quiz Game";
         this.Size = new Size(500, 300);
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.FixedDialog;
-        this.MaximizeBox = false;
-        this.KeyPreview = true;
-        this.Padding = new Padding(20);
 
-        // Question Label
-        questionLabel = new Label()
-        {
-            Left = 20,
-            Top = 20,
-            Width = 440,
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Color.FromArgb(60, 60, 60),
-            TextAlign = ContentAlignment.MiddleCenter
-        };
+        // Initialize Controls
+        questionLabel = new Label { Left = 20, Top = 20, Width = 440 };
+        answerTextBox = new TextBox { Left = 20, Top = 60, Width = 300 };
+        submitButton = new Button { Text = "Submit", Left = 330, Top = 60, Width = 120 };
+        livesLabel = new Label { Left = 20, Top = 100, Width = 200 };
+        scoreLabel = new Label { Left = 20, Top = 130, Width = 200 };
 
-        // Answer TextBox
-        answerTextBox = new TextBox()
-        {
-            Left = 20,
-            Top = 60,
-            Width = 300,
-            Font = new Font("Segoe UI", 12),
-            BackColor = Color.FromArgb(240, 240, 240),
-            BorderStyle = BorderStyle.FixedSingle,
-            Padding = new Padding(10)
-        };
-
-        // Submit Button
-        submitButton = new Button()
-        {
-            Text = "Submit",
-            Left = 330,
-            Top = 60,
-            Width = 120,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            BackColor = Color.FromArgb(30, 144, 255),
-            ForeColor = Color.White,
-            FlatStyle = FlatStyle.Flat,
-            FlatAppearance = { BorderSize = 0 },
-            Height = 30
-        };
-        submitButton.Click += SubmitAnswer;
-
-        // Lives Label
-        livesLabel = new Label()
-        {
-            Left = 20,
-            Top = 100,
-            Width = 200,
-            Font = new Font("Segoe UI", 12),
-            ForeColor = Color.FromArgb(255, 69, 58),
-            TextAlign = ContentAlignment.MiddleLeft
-        };
-
-        // Score Label
-        scoreLabel = new Label()
-        {
-            Left = 20,
-            Top = 130,
-            Width = 200,
-            Font = new Font("Segoe UI", 12),
-            ForeColor = Color.FromArgb(50, 205, 50),
-            TextAlign = ContentAlignment.MiddleLeft
-        };
+        // Apply styles
+        StyleManager.ApplyStyles(this);
+        StyleManager.ApplyLabelStyles(questionLabel, true);
+        StyleManager.ApplyLabelStyles(livesLabel);
+        StyleManager.ApplyLabelStyles(scoreLabel);
 
         // Add Controls to Form
         this.Controls.Add(questionLabel);
@@ -138,7 +85,8 @@ public class QuizForm : Form
         UpdateUI();
         ShowNextQuestion();
 
-        // Form KeyDown event for Enter key functionality
+        // Event handlers
+        submitButton.Click += SubmitAnswer;
         this.KeyDown += Form_KeyDown;
     }
 
