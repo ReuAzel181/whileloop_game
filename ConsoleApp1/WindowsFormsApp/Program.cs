@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 public class QuizForm : Form
 {
-    private int lives = 3;
+    private int lives = 5;
     private int score = 0;
     private Random random = new Random();
 
@@ -99,55 +99,87 @@ public class QuizForm : Form
     }
 
     private void SubmitAnswer(object sender, EventArgs e)
+{
+    if (string.IsNullOrEmpty(answerTextBox.Text)) return;
+
+    string userAnswer = answerTextBox.Text.Trim().ToLower();
+    int currentIndex = questions.IndexOf(questionLabel.Text);
+
+    if (currentIndex == -1)
     {
-        if (string.IsNullOrEmpty(answerTextBox.Text)) return;
+        MessageBox.Show("No question found. Please try again.");
+        return;
+    }
 
-        string userAnswer = answerTextBox.Text.Trim().ToLower();
-        int currentIndex = questions.IndexOf(questionLabel.Text);
+    bool isCorrect = answers[currentIndex].ToLower() == userAnswer;
+    
+    if (isCorrect)
+    {
+        score += 10;
+        questions.RemoveAt(currentIndex);
+        answers.RemoveAt(currentIndex);
 
-        if (currentIndex == -1)
+        // Random chance to restore a life
+        if (random.NextDouble() < 0.2) // 20% chance
         {
-            MessageBox.Show("No question found. Please try again.");
-            return;
-        }
-
-        if (answers[currentIndex].ToLower() == userAnswer)
-        {
-            score += 10;
-            MessageBox.Show("Correct! You earned 10 points.");
-            questions.RemoveAt(currentIndex);
-            answers.RemoveAt(currentIndex);
+            lives++;
+            MessageBox.Show("Correct! You earned 10 points and restored 1 life!");
         }
         else
         {
-            lives--;
-            MessageBox.Show("Wrong! You lost a life.");
+            MessageBox.Show("Correct! You earned 10 points.");
         }
-
-        UpdateUI();
-        ShowNextQuestion();
-
-        if (lives <= 0 || !questions.Any())
-        {
-            EndGame();
-        }
-
-        answerTextBox.Text = string.Empty;
     }
+    else
+    {
+        lives--;
+        MessageBox.Show($"Wrong! The correct answer was '{answers[currentIndex]}'. You lost a life.");
+    }
+
+    UpdateUI();
+    ShowNextQuestion();
+
+    if (lives <= 0 || !questions.Any())
+    {
+        EndGame();
+    }
+
+    answerTextBox.Text = string.Empty;
+}
+
 
     private void ShowNextQuestion()
     {
         if (lives > 0 && questions.Any())
         {
             int randomIndex = random.Next(0, questions.Count);
-            questionLabel.Text = questions[randomIndex];
+            string selectedQuestion = questions[randomIndex];
+
+            // Check if this question has a chance to restore a life
+            if (random.NextDouble() < 0.2) // 20% chance
+            {
+                // Set the question text and color before showing the notification
+                questionLabel.Text = selectedQuestion;
+                questionLabel.ForeColor = Color.Green; // Change text color to indicate a special question
+                questionLabel.Text += " (This question has a chance to restore a life!)";
+                
+                // Show notification after setting the text and color
+                MessageBox.Show("This question has a chance to restore a life!", "Special Notice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                // Set the question text and color for regular questions
+                questionLabel.Text = selectedQuestion;
+                questionLabel.ForeColor = Color.Black; // Reset text color for regular questions
+            }
         }
         else
         {
-            // Handle the case where there are no more questions
             EndGame();
         }
     }
+
+
 
     private void UpdateUI()
     {
